@@ -1,82 +1,104 @@
-import data
+import pytest
+import time
 from selenium import webdriver
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
 
-
-# no modificar
-def retrieve_phone_code(driver) -> str:
-    """Este código devuelve un número de confirmación de teléfono y lo devuelve como un string.
-    Utilízalo cuando la aplicación espere el código de confirmación para pasarlo a tus pruebas.
-    El código de confirmación del teléfono solo se puede obtener después de haberlo solicitado en la aplicación."""
-
-    import json
-    import time
-    from selenium.common import WebDriverException
-    code = None
-    for i in range(10):
-        try:
-            logs = [log["message"] for log in driver.get_log('performance') if log.get("message")
-                    and 'api/v1/number?number' in log.get("message")]
-            for log in reversed(logs):
-                message_data = json.loads(log)["message"]
-                body = driver.execute_cdp_cmd('Network.getResponseBody',
-                                              {'requestId': message_data["params"]["requestId"]})
-                code = ''.join([x for x in body['body'] if x.isdigit()])
-        except WebDriverException:
-            time.sleep(1)
-            continue
-        if not code:
-            raise Exception("No se encontró el código de confirmación del teléfono.\n"
-                            "Utiliza 'retrieve_phone_code' solo después de haber solicitado el código en tu aplicación.")
-        return code
-
-
-class UrbanRoutesPage:
-    from_field = (By.ID, 'from')
-    to_field = (By.ID, 'to')
-
-    def __init__(self, driver):
-        self.driver = driver
-
-    def set_from(self, from_address):
-        self.driver.find_element(*self.from_field).send_keys(from_address)
-
-    def set_to(self, to_address):
-        self.driver.find_element(*self.to_field).send_keys(to_address)
-
-    def get_from(self):
-        return self.driver.find_element(*self.from_field).get_property('value')
-
-    def get_to(self):
-        return self.driver.find_element(*self.to_field).get_property('value')
-
+from pages import UrbanRoutesPage
+import helpers
+import data
 
 
 class TestUrbanRoutes:
-
-    driver = None
-
     @classmethod
     def setup_class(cls):
-        # no lo modifiques, ya que necesitamos un registro adicional habilitado para recuperar el código de confirmación del teléfono
-        from selenium.webdriver import DesiredCapabilities
-        capabilities = DesiredCapabilities.CHROME
-        capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = webdriver.Chrome(desired_capabilities=capabilities)
+        from selenium.webdriver.chrome.options import Options
 
-    def test_set_route(self):
+        options = Options()
+        options.add_argument("--start-maximized")
+        options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+
+        cls.driver = webdriver.Chrome(options=options)
+
+        if helpers.is_url_reachable(data.urban_routes_url):
+            cls.driver.get(data.urban_routes_url)
+        else:
+            raise Exception("URL not reachable")
+
+        cls.page = UrbanRoutesPage(cls.driver)
+
+    def test_set_address(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
-        address_from = data.address_from
-        address_to = data.address_to
-        routes_page.set_route(address_from, address_to)
-        assert routes_page.get_from() == address_from
-        assert routes_page.get_to() == address_to
+        routes_page.set_route(data.address_from, data.address_to)
 
+        assert routes_page.get_from_address() == data.address_from
+        assert routes_page.get_to_address() == data.address_to
+
+    def test_select_supportive_plan(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+
+        assert routes_page.is_supportive_plan_selected()
+
+    def test_fill_phone_number(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.enter_phone_number(data.phone_number)
+
+        assert routes_page.is_phone_verified()
+
+    def test_fill_card(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.enter_payment_method(data.card_number, data.card_code)
+
+        assert routes_page.is_card_linked()
+
+    def test_comment_for_driver(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.set_message_for_driver(data.message_for_driver)
+
+        assert routes_page.get_message_for_driver() == data.message_for_driver
+
+    def test_order_blanket_and_handkerchiefs(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.click_blanket_and_handkerchiefs_slider()
+
+        assert routes_page.is_blanket_and_handkerchiefs_selected()
+
+    def test_order_2_ice_creams(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.order_ice_cream(2)
+
+        assert routes_page.get_ice_cream_count() == 2
+
+    def test_car_search_modal_appears(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_route(data.address_from, data.address_to)
+        routes_page.select_supportive_plan()
+        routes_page.enter_phone_number(data.phone_number)
+        routes_page.set_message_for_driver(data.message_for_driver)
+        routes_page.click_order_button()
+
+        assert routes_page.is_car_search_modal_visible()
 
     @classmethod
     def teardown_class(cls):
         cls.driver.quit()
+
