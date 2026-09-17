@@ -1,5 +1,4 @@
 import pytest
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -11,8 +10,6 @@ import data
 class TestUrbanRoutes:
     @classmethod
     def setup_class(cls):
-        from selenium.webdriver.chrome.options import Options
-
         options = Options()
         options.add_argument("--start-maximized")
         options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
@@ -101,4 +98,3 @@ class TestUrbanRoutes:
     @classmethod
     def teardown_class(cls):
         cls.driver.quit()
-
