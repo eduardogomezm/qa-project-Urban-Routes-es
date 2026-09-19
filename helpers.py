@@ -1,3 +1,7 @@
+import json
+import time
+from selenium.common import WebDriverException
+
 # Obtiene el código telefónico. No lo modifique.
 # El archivo no debe sufrir ninguna modificación.
 
@@ -6,9 +10,7 @@ def retrieve_phone_code(driver) -> str:
 Úselo cuando la aplicación esté esperando el código de confirmación, para así pasarlo a sus pruebas.
 El código de confirmación telefónica solo puede obtenerse después de haber sido solicitado en la aplicación."""
 
-    import json
-    import time
-    from selenium.common import WebDriverException
+
     code = None
     for i in range(10):
         try:

@@ -1,25 +1,24 @@
-Sprint9 Urban Routes Automation Project 
+# Sprint9 Urban Routes Automation Project 🚕
 
-This repository represents Sprint 8 of my QA Engineering journey — building an end-to-end automation suite for the Urban Routes web application using Python, Selenium WebDriver, Pytest, and the Page Object Model (POM).
+This repository contains an end-to-end automated test suite for the **Urban Routes** web application using Python, Selenium WebDriver, Pytest, and the Page Object Model (POM) design pattern.
 
-🚕 Automated Test Scope
+---
 
-This project covers the full flow of ordering a taxi in the Urban Routes app:
+## 📋 Prerequisites & Requirements
 
-Setting pickup & drop-off addresses
-Selecting the Supportive plan (with conditional check to avoid redundant clicks)
-Entering and verifying phone number (via retrieve_phone_code() helper)
-Adding a credit card (handling CVV/Link button edge case)
-Writing a driver comment
-Ordering blanket & handkerchiefs (state verification)
-Ordering 2 ice creams
-Ordering a taxi with Supportive tariff and verifying the car search modal
+- **Python Version:** `Python 3.10+` (Tested on `Python 3.13`)
+- **Browser:** Google Chrome (Latest stable version)
+- **WebDriver:** `chromedriver` (Matching installed Chrome browser version)
 
-🛠 Tech Stack
+### Dependencies (`requirements.txt`)
+- `selenium>=4.0.0`
+- `pytest>=7.0.0`
 
-Python 3.13
-Selenium WebDriver
-Pytest
-ChromeDriver
-Page Object Model (POM)
-Git + GitHub
+---
+
+## 🛠️ Setup & Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository_url>
+   cd <repository_folder>

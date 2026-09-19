@@ -17,7 +17,10 @@ class UrbanRoutesPage:
         self.submit_button = (By.XPATH, "//button[contains(text(),'Call a taxi') or contains(text(),'Pedir un taxi') or contains(@class, 'button round')]")
 
         # 2. Tarifa / Planes
-        self.supportive_plan = (By.XPATH, "//div[contains(@class, 'tarriff-card') and .//div[text()='Supportive']]")
+        self.comfort_plan = (
+            By.XPATH,
+            "//div[contains(@class, 'tcard') and .//*[normalize-space()='Comfort']]"
+        )
 
         # 3. Teléfono
         self.phone_button = (By.CLASS_NAME, "np-button")
@@ -44,6 +47,7 @@ class UrbanRoutesPage:
         # 6. Pedido final
         self.order_button = (By.ID, "order")
         self.car_modal = (By.CLASS_NAME, "order-search")
+        self.driver_info = (By.CSS_SELECTOR, ".order-body")
 
     # ========== DIRECCIÓN Y RUTA ==========
     def set_route(self, from_address, to_address):
@@ -66,15 +70,17 @@ class UrbanRoutesPage:
         return self.wait.until(EC.visibility_of_element_located(self.to_field)).get_attribute("value")
 
     # ========== PLANES Y TARIFAS ==========
-    def select_supportive_plan(self):
-        plan_card = self.wait.until(EC.presence_of_element_located(self.supportive_plan))
+    def select_comfort_plan(self):
+        plan_card = self.wait.until(EC.presence_of_element_located(self.comfort_plan))
         self.driver.execute_script("arguments[0].scrollIntoView(true);", plan_card)
-        clickable_card = self.wait.until(EC.element_to_be_clickable(self.supportive_plan))
+        clickable_card = self.wait.until(EC.element_to_be_clickable(self.comfort_plan))
         clickable_card.click()
 
-    def is_supportive_plan_selected(self):
-        active_card = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "tcard.active")))
-        return "Supportive" in active_card.text
+    def is_comfort_plan_selected(self):
+        active_card = self.wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".tcard.active"))
+        )
+        return "Comfort" in active_card.text
 
     # ========== TELÉFONO ==========
     def enter_phone_number(self, phone_number):
@@ -94,8 +100,8 @@ class UrbanRoutesPage:
         self.wait.until(EC.element_to_be_clickable(self.confirm_button)).click()
 
     def is_phone_verified(self):
-        phone_input = self.wait.until(EC.visibility_of_element_located(self.phone_input))
-        return phone_input.get_attribute("value") != ""
+        phone_btn = self.wait.until(EC.visibility_of_element_located(self.phone_button))
+        return phone_btn.text != "" and phone_btn.text != "Número de teléfono"
 
     # ========== MÉTODO DE PAGO ==========
     def enter_payment_method(self, card_number, card_code):
@@ -137,7 +143,7 @@ class UrbanRoutesPage:
     def get_message_for_driver(self):
         return self.wait.until(EC.visibility_of_element_located(self.comment_input)).get_attribute("value")
 
-    # ========== REQUISITOS ADICIONALES (Manta / Pañuelos / Helado) ==========
+    # ========== REQUISITOS ADICIONALES ==========
     def click_blanket_and_handkerchiefs_slider(self):
         self.wait.until(EC.element_to_be_clickable(self.blanket_and_handkerchiefs_slider)).click()
 
@@ -166,5 +172,14 @@ class UrbanRoutesPage:
         try:
             modal = self.wait.until(EC.visibility_of_element_located(self.car_modal))
             return modal.is_displayed()
+        except TimeoutException:
+            return False
+
+    def is_driver_info_visible(self):
+        try:
+            driver_info = self.wait.until(
+                EC.visibility_of_element_located(self.driver_info)
+            )
+            return driver_info.is_displayed()
         except TimeoutException:
             return False

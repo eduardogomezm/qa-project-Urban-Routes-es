@@ -31,19 +31,19 @@ class TestUrbanRoutes:
         assert routes_page.get_from_address() == data.address_from
         assert routes_page.get_to_address() == data.address_to
 
-    def test_select_supportive_plan(self):
+    def test_select_comfort_plan(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
 
-        assert routes_page.is_supportive_plan_selected()
+        assert routes_page.is_comfort_plan_selected()
 
     def test_fill_phone_number(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.enter_phone_number(data.phone_number)
 
         assert routes_page.is_phone_verified()
@@ -52,7 +52,7 @@ class TestUrbanRoutes:
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.enter_payment_method(data.card_number, data.card_code)
 
         assert routes_page.is_card_linked()
@@ -61,7 +61,7 @@ class TestUrbanRoutes:
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.set_message_for_driver(data.message_for_driver)
 
         assert routes_page.get_message_for_driver() == data.message_for_driver
@@ -70,7 +70,7 @@ class TestUrbanRoutes:
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.click_blanket_and_handkerchiefs_slider()
 
         assert routes_page.is_blanket_and_handkerchiefs_selected()
@@ -79,21 +79,26 @@ class TestUrbanRoutes:
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.order_ice_cream(2)
 
         assert routes_page.get_ice_cream_count() == 2
 
-    def test_car_search_modal_appears(self):
+    def test_car_search_and_driver_info(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
+
         routes_page.set_route(data.address_from, data.address_to)
-        routes_page.select_supportive_plan()
+        routes_page.select_comfort_plan()
         routes_page.enter_phone_number(data.phone_number)
+        routes_page.enter_payment_method(data.card_number, data.card_code)
         routes_page.set_message_for_driver(data.message_for_driver)
+        routes_page.click_blanket_and_handkerchiefs_slider()
+        routes_page.order_ice_cream(2)
         routes_page.click_order_button()
 
         assert routes_page.is_car_search_modal_visible()
+        assert routes_page.is_driver_info_visible()
 
     @classmethod
     def teardown_class(cls):
