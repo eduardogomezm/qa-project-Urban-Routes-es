@@ -31,10 +31,14 @@ class UrbanRoutesPage:
 
         # 4. Método de Pago
         self.payment_method_button = (By.CLASS_NAME, "pp-button")
-        self.add_card_container = (By.XPATH, "//div[contains(@class, 'pp-title') and text()='Add card']/ancestor::div[contains(@class, 'pp-row')]")
+        self.add_card_container = (
+            By.XPATH,
+            "//div[contains(@class, 'pp-row') and "
+            ".//div[contains(@class, 'pp-title') and normalize-space()='Agregar tarjeta']]"
+        )
         self.card_number_input = (By.ID, "number")
-        self.card_code_input = (By.ID, "code")
-        self.link_card_button = (By.XPATH, "//button[text()='Link' or text()='Enlazar']")
+        self.card_code_input = (By.XPATH, "//input[@placeholder='12']")
+        self.link_card_button = (By.XPATH, "//button[normalize-space()='Agregar']")
         self.overlay = (By.CLASS_NAME, "overlay")
 
         # 5. Requisitos de viaje
@@ -183,3 +187,11 @@ class UrbanRoutesPage:
             return driver_info.is_displayed()
         except TimeoutException:
             return False
+
+    def close_payment_modal(self):
+        close_button = (
+            By.CSS_SELECTOR,
+            ".payment-picker .section.active .section-close"
+        )
+        self.wait.until(EC.element_to_be_clickable(close_button)).click()
+        self.wait.until(EC.invisibility_of_element_located(self.overlay))

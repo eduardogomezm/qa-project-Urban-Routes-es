@@ -1,6 +1,8 @@
 import json
 import time
 from selenium.common import WebDriverException
+import ssl
+import urllib.request
 
 # Obtiene el código telefónico. No lo modifique.
 # El archivo no debe sufrir ninguna modificación.
@@ -35,8 +37,7 @@ def is_url_reachable(url):
     """Comprueba si se puede acceder a la URL. Pasa la URL de Urban Routes como parámetro.
 Si es accesible, devuelve True; de ​​lo contrario, devuelve False."""
 
-    import ssl
-    import urllib.request
+
 
     try:
         ssl_ctx = ssl.create_default_context()
