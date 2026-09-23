@@ -14,7 +14,8 @@ class UrbanRoutesPage:
         # 1. Dirección y Ruta
         self.from_field = (By.ID, "from")
         self.to_field = (By.ID, "to")
-        self.submit_button = (By.XPATH, "//button[contains(text(),'Call a taxi') or contains(text(),'Pedir un taxi') or contains(@class, 'button round')]")
+        self.submit_button = (By.XPATH,
+                              "//button[contains(text(),'Call a taxi') or contains(text(),'Pedir un taxi')]")
 
         # 2. Tarifa / Planes
         self.comfort_plan = (
@@ -45,13 +46,14 @@ class UrbanRoutesPage:
         self.comment_input = (By.ID, "comment")
         self.blanket_and_handkerchiefs_slider = (By.CLASS_NAME, "slider")
         self.blanket_checkbox = (By.XPATH, "//input[@type='checkbox']")
-        self.ice_cream_button = (By.ID, "ice-cream")
-        self.ice_cream_count = (By.CLASS_NAME, "ice-cream-count")
+        self.ice_cream_plus_button = (By.CLASS_NAME, "counter-plus")
+        self.ice_cream_counter_value = (By.CLASS_NAME, "counter-value")
 
         # 6. Pedido final
-        self.order_button = (By.ID, "order")
-        self.car_modal = (By.CLASS_NAME, "order-search")
-        self.driver_info = (By.CSS_SELECTOR, ".order-body")
+        self.order_button = (By.CLASS_NAME, "smart-button-wrapper")
+        self.car_search_modal = (By.CLASS_NAME, "order-body")
+        self.driver_name = (By.XPATH, "//div[@class='order-btn-group'][1]/div[2]")
+        self.driver_rating = (By.CLASS_NAME, "order-btn-rating")
 
     # ========== DIRECCIÓN Y RUTA ==========
     def set_route(self, from_address, to_address):
@@ -109,18 +111,10 @@ class UrbanRoutesPage:
 
     # ========== MÉTODO DE PAGO ==========
     def enter_payment_method(self, card_number, card_code):
-        self.wait.until(EC.element_to_be_clickable(self.payment_method_button)).click()
-        self.wait.until(EC.invisibility_of_element_located(self.overlay))
-
-        add_card_elem = self.wait.until(EC.presence_of_element_located(self.add_card_container))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", add_card_elem)
-        self.wait.until(EC.element_to_be_clickable(self.add_card_container)).click()
-
-        self.set_card_number(card_number)
-        self.set_card_code(card_code)
-
+        ...
         link_btn = self.wait.until(EC.element_to_be_clickable(self.link_card_button))
         link_btn.click()
+        self.close_payment_modal()  # deja la página lista para el siguiente paso
 
     def set_card_number(self, number):
         card_input = self.wait.until(EC.visibility_of_element_located(self.card_number_input))
@@ -157,13 +151,17 @@ class UrbanRoutesPage:
 
     def order_ice_cream(self, count):
         for _ in range(count):
-            button = self.wait.until(EC.element_to_be_clickable(self.ice_cream_button))
+            button = self.wait.until(
+                EC.presence_of_all_elements_located(self.ice_cream_plus_button)
+            )[0]
             self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
             button.click()
 
     def get_ice_cream_count(self):
-        count_elem = self.wait.until(EC.visibility_of_element_located(self.ice_cream_count))
-        return int(count_elem.text)
+        counter = self.wait.until(
+            EC.presence_of_all_elements_located(self.ice_cream_counter_value)
+        )[0]
+        return int(counter.text)
 
     # ========== PEDIDO FINAL ==========
     def click_order_button(self):
