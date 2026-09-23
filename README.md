@@ -1,39 +1,39 @@
-# Sprint 9: Urban Routes Automated End-to-End Test Framework 🚕
+# Sprint 9: Automatización de pruebas de la aplicación web para Urban Routes 🚕
 
-A robust, maintainable, and scalable End-to-End (E2E) automated testing suite built for the **Urban Routes** web application. This project automates the critical path of the ride-hailing workflow, implementing industry-standard design patterns such as the **Page Object Model (POM)**, explicit synchronization strategies, and automated Chrome DevTools Protocol (CDP) network interception.
+Una suite de pruebas automatizadas End-to-End (E2E) robusta, mantenible y escalable desarrollada para la aplicación web **Urban Routes**. Este proyecto automatiza el flujo crítico del proceso de solicitud de viajes, implementando patrones de diseño estándar de la industria como el **Page Object Model (POM)**, estrategias de sincronización explícita e interceptación de red automatizada mediante el protocolo Chrome DevTools (CDP).
+---
+
+## 📌 Tabla de Contenidos
+- [Descripción General y Cobertura Funcional](#-descripción-general-y-cobertura-funcional)
+- [Arquitectura del Framework y Diseño Técnico](#-arquitectura-del-framework-y-diseño-técnico)
+- [Estructura del Repositorio](#-estructura-del-repositorio)
+- [Requisitos Previos del Sistema](#-requisitos-previos-del-sistema)
+- [Dependencias del Framework](#-dependencias-del-framework)
+- [Configuración e Instalación](#-configuración-e-instalación)
+- [Actualización de Datos de Prueba Dinámicos](#-actualización-de-datos-de-prueba-dinámicos)
+- [Ejecución de Pruebas y Guía de Comandos](#-ejecución-de-pruebas-y-guía-de-comandos)
 
 ---
 
-## 📌 Table of Contents
-- [Overview & Functional Coverage](#-overview--functional-coverage)
-- [Framework Architecture & Technical Design](#-framework-architecture--technical-design)
-- [Repository Structure](#-repository-structure)
-- [Prerequisites & System Requirements](#-prerequisites--system-requirements)
-- [Framework Dependencies](#-framework-dependencies)
-- [Setup & Installation](#-setup--installation)
-- [Updating Dynamic Test Data](#-updating-dynamic-test-data)
-- [Test Execution & Command Guide](#-test-execution--command-guide)
+## 📖 Descripción General y Cobertura Funcional
+
+El objetivo principal de esta suite automatizada es realizar pruebas de regresión y validación en el flujo completo de pedidos de **Urban Routes**. La suite cubre escenarios de usuario de extremo a extremo, desde la entrada inicial de direcciones hasta la búsqueda activa del vehículo y la asignación del conductor.
+
+### Escenarios Funcionales Automatizados:
+1. **Selección de Ruta:** Configuración de las direcciones de origen ("Desde") y destino ("Hasta").
+2. **Selección de Tarifa/Plan:** Selección del plan "Comfort" y verificación de los indicadores de estado activo en la interfaz.
+3. **Autenticación Telefónica por SMS:** Solicitud de código de verificación e interceptación de registros de rendimiento para extraer y enviar el PIN automáticamente.
+4. **Viculación de Método de Pago:** Adición de una tarjeta de crédito válida (Número de tarjeta + CVV) y vinculación al perfil.
+5. **Comunicación con el Conductor:** Envío de instrucciones o comentarios personalizados para el conductor.
+6. **Servicios Adicionales:** Solicitud de extras para el viaje, incluyendo mantas/pañuelos y múltiples unidades de helado.
+7. **Envío del Pedido y Modal del Conductor:** Confirmación de la solicitud final del viaje y aserción de la visibilidad del modal de búsqueda de automóvil y del panel con información del conductor.
 
 ---
 
-## 📖 Overview & Functional Coverage
+## 🏗️ Arquitectura del Framework y Diseño Técnico
 
-The primary objective of this automated suite is to perform regression and validation testing on the complete order flow of **Urban Routes**. The suite covers end-to-end user scenarios from initial address entry to active vehicle search and driver assignment.
+Este framework utiliza principios de arquitectura limpia para maximizar la mantenibilidad, legibilidad y solidez de las pruebas:
 
-### Functional Scenarios Automated:
-1. **Route Selection:** Setting "From" and "To" origin/destination addresses.
-2. **Tariff Plan Selection:** Selecting the "Comfort" plan and verifying active state UI indicators.
-3. **SMS Phone Authentication:** Requesting a verification code and intercepting performance logs to automatically extract and submit the pin.
-4. **Payment Method Binding:** Adding a valid credit card (Card number + CVV) and linking it to the profile.
-5. **Driver Communications:** Submitting custom instructions/comments for the driver.
-6. **Additional Amenities:** Ordering trip extras including blankets/handkerchiefs and multiple ice cream items.
-7. **Order Dispatch & Driver Modal:** Submitting the final ride request and asserting the visibility of the vehicle search modal and driver details overlay.
-
----
-
-## 🏗️ Framework Architecture & Technical Design
-
-This framework leverages clean architecture principles to maximize maintainability, readability, and test robustness:
 
 ```text
                                   +-----------------------+
@@ -52,43 +52,43 @@ This framework leverages clean architecture principles to maximize maintainabili
                                                                     |     (Chrome Browser)  |
                                                                     +-----------------------+
 
-📁 Repository Structure
+📁 Estructura del Repositorio
+
 qa-project-Urban-Routes-es/
 │
-├── pages.py            # Page Object Model encapsulating UI locators and page interactions
-├── main.py             # Pytest test suite containing E2E test cases and assertions
-├── helpers.py          # Utility functions for network interception & URL availability checks
-├── data.py             # Test data constants (URLs, phone numbers, addresses, payment info)
-├── requirements.txt    # Framework dependency declaration
-└── README.md           # Technical documentation and execution guide
+├── pages.py            # Page Object Model que encapsula localizadores de UI e interacciones
+├── main.py             # Suite de pruebas Pytest con casos de prueba E2E y aserciones
+├── helpers.py          # Utilidades para interceptación de red y verificación de URL
+├── data.py             # Constantes de datos de prueba (URLs, teléfonos, direcciones, tarjetas)
+├── requirements.txt    # Declaración de dependencias del proyecto
+└── README.md           # Documentación técnica y guía de ejecución
 
+📋 Requisitos Previos del Sistema
 
-📋 Prerequisites & System Requirements
+Antes de configurar el proyecto localmente, asegúrate de que tu equipo cumpla con los siguientes requisitos:Entorno Python: Python 3.10+ (Probado y verificado en Python 3.13.5).   
+Navegador: Google Chrome (Última versión estable)[cite: 5].WebDriver: Gestionado dinámicamente mediante Selenium Manager (incluido en Selenium 4+), eliminando la gestión manual de binarios chromedriver
 
-Before setting up the project locally, ensure your machine fulfills the following requirements:Python Runtime: Python 3.10+ (Tested and verified on Python 3.13.5).   
-Browser: Google Chrome (Latest stable version)[cite: 5].WebDriver: Managed dynamically via Selenium Manager (built-in with Selenium 4+), eliminating the manual management of chromedriver binaries[cite: 5].
-
-📦 Framework Dependencies
+📦 Dependencias del Framework
 
 Plaintext
 selenium>=4.0.0
 pytest>=7.0.0
 
-⚙️ Setup & Installation
+⚙️ Configuración e Instalación
 
 Bash
 git clone <repository_url>
 cd qa-project-Urban-Routes-es
 
 
-Install Dependencies
+Instalar Dependencias
 
 Bash
 pip install --upgrade pip
 pip install -r requirements.txt
 
 
-🔄 Updating Dynamic Test Data
+🔄 Actualización de Datos de Prueba Dinámicos
 
 # data.py
 urban_routes_url = '[https://cnt-66de97dc-e75d-495d-8ca3-869c41abe993.containerhub.tripleten-services.com?lng=es](https://cnt-66de97dc-e75d-495d-8ca3-869c41abe993.containerhub.tripleten-services.com?lng=es)'
@@ -99,7 +99,7 @@ card_number, card_code = '1234 5678 9100', '111'
 message_for_driver = 'Muéstrame el camino al museo'
 
 
-🧪 Test Execution & Command Guide
+🧪 Ejecución de Pruebas y Guía de Comandos
 
 Bash
 pytest main.py
