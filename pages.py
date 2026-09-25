@@ -111,10 +111,13 @@ class UrbanRoutesPage:
 
     # ========== MÉTODO DE PAGO ==========
     def enter_payment_method(self, card_number, card_code):
-        ...
+        self.wait.until(EC.element_to_be_clickable(self.payment_method_button)).click()
+        self.wait.until(EC.element_to_be_clickable(self.add_card_container)).click()
+        self.set_card_number(card_number)
+        self.set_card_code(card_code)
         link_btn = self.wait.until(EC.element_to_be_clickable(self.link_card_button))
         link_btn.click()
-        self.close_payment_modal()  # deja la página lista para el siguiente paso
+        self.close_payment_modal()
 
     def set_card_number(self, number):
         card_input = self.wait.until(EC.visibility_of_element_located(self.card_number_input))
@@ -172,15 +175,15 @@ class UrbanRoutesPage:
 
     def is_car_search_modal_visible(self):
         try:
-            modal = self.wait.until(EC.visibility_of_element_located(self.car_modal))
+            modal = self.wait.until(EC.visibility_of_element_located(self.car_search_modal))
             return modal.is_displayed()
         except TimeoutException:
             return False
 
     def is_driver_info_visible(self):
         try:
-            driver_info = self.wait.until(
-                EC.visibility_of_element_located(self.driver_info)
+            driver_info = WebDriverWait(self.driver, 60).until(
+                EC.visibility_of_element_located(self.driver_name)
             )
             return driver_info.is_displayed()
         except TimeoutException:

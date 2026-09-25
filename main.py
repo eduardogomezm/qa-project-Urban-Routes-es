@@ -100,6 +100,17 @@ class TestUrbanRoutes:
         assert routes_page.is_car_search_modal_visible()
         assert routes_page.is_driver_info_visible()
 
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
+    def setup_method(self):
+        options = Options()
+        options.add_argument("--start-maximized")
+        options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+        self.driver = webdriver.Chrome(options=options)
+
+        if not helpers.is_url_reachable(data.urban_routes_url):
+            raise Exception("URL not reachable")
+
+        self.driver.get(data.urban_routes_url)
+        self.routes_page = UrbanRoutesPage(self.driver)
+
+    def teardown_method(self):
+        self.driver.quit()
